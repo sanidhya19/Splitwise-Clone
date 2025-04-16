@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Splitwise{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --gradient-start: rgba(235,145,184,1);
+        --gradient-end: rgba(148,187,233,1);
+        --primary-color: #6a11cb;
+        --navbar-height: 56px;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: linear-gradient(90deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .register-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+        margin-top: var(--navbar-height);
+    }
+    
+    .register-card {
+        width: 100%;
+        max-width: 450px;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        background: white;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card-header {
+        background: white;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .input-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-right: 0;
+    }
+    
+    .form-control {
+        border-left: 0;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .password-requirements {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: -0.8rem;
+        margin-bottom: 1.5rem;
+        margin-left: 3rem; /* Matches input field padding */
+    }
+    
+    .name-fields {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .name-fields > div {
+        flex: 1;
+    }
+    
+    .name-fields .input-group-text {
+        border-radius: 0.375rem 0 0 0.375rem;
+    }
+</style>
+
+<div class="register-container">
+    <div class="card register-card">
+        <div class="card-header">
+            <h2 class="fw-bold mb-2 text-primary">Create Your Account</h2>
+        </div>
+        
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="name-fields">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="first_name" 
+                               name="first_name" 
+                               placeholder="First Name" 
+                               required>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="last_name" 
+                               name="last_name" 
+                               placeholder="Last Name" 
+                               required>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-user-circle"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control" 
+                           id="username" 
+                           name="username" 
+                           placeholder="Username" 
+                           required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           name="email" 
+                           placeholder="Email" 
+                           required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" 
+                           class="form-control" 
+                           id="password" 
+                           name="password" 
+                           placeholder="Password" 
+                           required>
+                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="password-requirements">
+                    Must be at least 8 characters
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" 
+                           class="form-control" 
+                           id="confirm_password" 
+                           name="confirm_password" 
+                           placeholder="Confirm Password" 
+                           required>
+                </div>
+                
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </button>
+                </div>
+                
+                {% if messages %}
+                    <div class="alert alert-danger mb-3">
+                        {% for message in messages %}
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+        
+        <div class="card-footer bg-white border-0 text-center py-3">
+            <p class="mb-0">
+                Already have an account? <a href="{% url 'login' %}" class="fw-bold text-primary">Sign In</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password strength indicator
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        const strengthIndicator = document.querySelector('.password-requirements');
+        
+        if (password.length === 0) {
+            strengthIndicator.textContent = 'Must be at least 8 characters';
+            strengthIndicator.style.color = '#6c757d';
+        } else if (password.length < 8) {
+            strengthIndicator.textContent = 'Too short (min 8 characters)';
+            strengthIndicator.style.color = '#dc3545';
+        } else {
+            strengthIndicator.textContent = 'Good password';
+            strengthIndicator.style.color = '#28a745';
+        }
+    });
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const passwordInput = this.parentElement.querySelector('input');
+            const icon = this.querySelector('i');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+    });
+
+    // Form validation
+    (function() {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

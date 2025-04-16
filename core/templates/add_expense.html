@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Add Expense{% endblock %}
+
+{% block content %}
+<h2>Add Expense</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <label for="description">Description:</label>
+    <input type="text" name="description" required><br><br>
+
+    <label for="amount">Amount:</label>
+    <input type="number" step="0.01" name="amount" required><br><br>
+
+    <label>Select friends to split with:</label><br>
+    {% for friend in friends %}
+        <div>
+            <input type="checkbox" name="friends" value="{{ friend.id }}">
+            <label>{{ friend.username }}</label>
+        </div>
+    {% empty %}
+        <p>You have no friends to split with yet.</p>
+    {% endfor %}
+    
+    <br>
+    <button type="submit" class="btn btn-success">Add Expense</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Search Results - Splitwise{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Search Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-search text-primary me-2"></i>Search Results
+        </h2>
+        <div class="w-50">
+            <form method="GET" action="{% url 'search_users' %}" class="input-group shadow-sm">
+                <input type="text" name="q" class="form-control" 
+                       placeholder="Search users..." value="{{ request.GET.q }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search me-2"></i>Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Grid -->
+    {% if users %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for user in users %}
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <!-- User Avatar -->
+                        <div class="avatar bg-primary text-white rounded-circle me-3">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <!-- User Info -->
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ user.username }}</h5>
+                            <small class="text-muted">{{ user.email }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0">
+                    {% if user != request.user %}
+                    <form method="POST" action="{% url 'send_friend_request' user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i>Add Friend
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-outline-secondary w-100" disabled>
+                        <i class="fas fa-user me-2"></i>That's You
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="card border-0 text-center py-5">
+        <div class="card-body">
+            <i class="fas fa-user-slash fa-4x text-muted mb-4"></i>
+            <h5 class="text-muted mb-3">No Users Found</h5>
+            <p class="text-muted">Try searching for a different username or email</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .avatar {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+    
+    .card {
+        border-radius: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    
+    .form-control {
+        border-radius: 8px;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #4f46e5;
+        color: white;
+    }
+</style>
+{% endblock %}

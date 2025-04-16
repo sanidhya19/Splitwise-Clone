@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}{{ group.name }} - Splitwise{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Group Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-users me-2 text-primary"></i>{{ group.name }}
+            </h2>
+            <p class="text-muted mb-0">{{ group.members.count }} members</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Members Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user-friends me-2 text-primary"></i>Members
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                {% for member in group.members.all %}
+                    <span class="badge bg-primary bg-opacity-10 text-primary py-2 px-3 rounded-pill">
+                        <i class="fas fa-user-circle me-1"></i>{{ member.username }}
+                    </span>
+                {% empty %}
+                    <p class="text-muted mb-0">No members in this group</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Expense Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-receipt me-2 text-primary"></i>Add Group Expense
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'add_group_expense' group.id %}" id="expenseForm">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text" class="form-control" id="description" name="description" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Total Amount (₹)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" step="0.01" class="form-control" id="amount" 
+                               name="amount" required onchange="updateEqualSplit()">
+                    </div>
+                </div>
+
+                <div class="mb-3 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="setEqualSplit()">
+                        <i class="fas fa-equals me-1"></i>Split Equally
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearPayments()">
+                        <i class="fas fa-eraser me-1"></i>Clear
+                    </button>
+                </div>
+
+                <h6 class="mb-3"><i class="fas fa-money-bill-wave me-2"></i>Who paid how much?</h6>
+                <div id="contributionsSection" class="mb-4">
+                    {% for member in group.members.all %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ member.username }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" step="0.01" class="form-control payment-input" 
+                                       name="paid_{{ member.id }}" id="paid_{{ member.id }}"
+                                       placeholder="0.00" onchange="updateTotal()">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="alert alert-light border mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Entered Total:</span>
+                        <strong id="totalEntered">₹0.00</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Required Total:</span>
+                        <strong id="requiredTotal">₹0.00</strong>
+                    </div>
+                    <div id="amountWarning" class="text-danger mt-2 text-center" style="display: none;">
+                        <i class="fas fa-exclamation-circle me-1"></i>Amounts don't match!
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                    <i class="fas fa-plus-circle me-1"></i>Add Expense
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Clear Transactions Button -->
+    <form method="POST" action="{% url 'clear_group_splits' group.id %}" class="text-end mb-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger" 
+                onclick="return confirm('Are you sure you want to clear ALL transactions for this group?')">
+            <i class="fas fa-trash-alt me-1"></i>Clear All Transactions
+        </button>
+    </form>
+
+    <!-- Expense Breakdown -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list-alt me-2 text-primary"></i>Expense Breakdown
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if group_expenses %}
+                <div class="list-group">
+                    {% for expense in group_expenses %}
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">{{ expense.description }}</h6>
+                                    <small class="text-muted">
+                                        Paid by {{ expense.payer.username }} • ₹{{ expense.amount }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-light text-dark">
+                                    {{ expense.created_at|date:"M d" }}
+                                </span>
+                            </div>
+                            
+                            <div class="mt-2">
+                                {% for share in expense.shares.all %}
+                                    <div class="d-flex justify-content-between py-1 border-bottom border-light">
+                                        <span>
+                                            {% if share.amount < 0 %}
+                                                <i class="fas fa-arrow-right text-danger me-2"></i>
+                                                {{ share.user.username }} owes ₹{{ share.amount|floatformat:2|slice:"1:" }}
+                                            {% elif share.amount > 0 %}
+                                                <i class="fas fa-arrow-left text-success me-2"></i>
+                                                {{ share.user.username }} gets ₹{{ share.amount|floatformat:2 }}
+                                            {% else %}
+                                                <i class="fas fa-check text-muted me-2"></i>
+                                                {{ share.user.username }} settled
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-receipt text-muted fa-3x mb-3"></i>
+                    <p class="text-muted">No expenses added yet</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- All Splits -->
+    {% if splits %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-exchange-alt me-2 text-primary"></i>Balances
+            </h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                {% for split in splits %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-danger bg-opacity-10 text-danger me-2">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                            {{ split.from_user.username }} → {{ split.to_user.username }}
+                        </div>
+                        <span class="badge bg-primary rounded-pill">
+                            ₹{{ split.amount }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function updateTotal() {
+        const inputs = document.querySelectorAll('.payment-input');
+        let total = 0;
+        
+        inputs.forEach(input => {
+            const value = parseFloat(input.value) || 0;
+            total += value;
+        });
+        
+        const requiredTotal = parseFloat(document.getElementById('amount').value) || 0;
+        
+        document.getElementById('totalEntered').textContent = `₹${total.toFixed(2)}`;
+        document.getElementById('requiredTotal').textContent = `₹${requiredTotal.toFixed(2)}`;
+        
+        const warning = document.getElementById('amountWarning');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (Math.abs(total - requiredTotal) > 0.01) {
+            warning.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-secondary');
+        } else {
+            warning.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        }
+    }
+
+    function setEqualSplit() {
+        const totalAmount = parseFloat(document.getElementById('amount').value);
+        if (!totalAmount || isNaN(totalAmount)) {
+            alert('Please enter a valid total amount first');
+            return;
+        }
+
+        const inputs = document.querySelectorAll('.payment-input');
+        const memberCount = inputs.length;
+        const equalShare = totalAmount / memberCount;
+
+        inputs.forEach(input => {
+            input.value = equalShare.toFixed(2);
+        });
+
+        updateTotal();
+    }
+
+    function updateEqualSplit() {
+        const totalAmount = parseFloat(document.getElementById('amount').value) || 0;
+        document.getElementById('requiredTotal').textContent = `₹${totalAmount.toFixed(2)}`;
+        updateTotal();
+    }
+
+    function clearPayments() {
+        const inputs = document.querySelectorAll('.payment-input');
+        inputs.forEach(input => {
+            input.value = '';
+        });
+        updateTotal();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateEqualSplit();
+
+        document.getElementById('expenseForm').addEventListener('submit', function(event) {
+            const totalAmount = parseFloat(document.getElementById('amount').value) || 0;
+            let enteredTotal = 0;
+
+            document.querySelectorAll('.payment-input').forEach(input => {
+                enteredTotal += parseFloat(input.value) || 0;
+            });
+
+            if (Math.abs(totalAmount - enteredTotal) > 0.01) {
+                event.preventDefault();
+                alert('The sum of individual payments must equal the total expense amount!');
+                document.getElementById('amountWarning').style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}

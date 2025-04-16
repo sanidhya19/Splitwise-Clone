@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History - Splitwise{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-history me-2"></i>Transaction History</h2>
+    </div>
+    
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            {% if history %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Details</th>
+                            <th class="text-end pe-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in history %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="text-muted small">{{ entry.created_at|date:"M d" }}</div>
+                                <div class="text-muted smaller">{{ entry.created_at|date:"h:i A" }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-medium">{{ entry.description }}</div>
+                                {% if entry.group %}
+                                <div class="text-muted small mt-1">
+                                    <i class="fas fa-users me-1"></i>{{ entry.group.name }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold {% if entry.amount < 0 %}text-danger{% else %}text-success{% endif %}">
+                                ₹{{ entry.amount|floatformat:2 }}
+                            </td>
+                            <td>
+                                {% if entry.related_user %}
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm me-2">
+                                        <span class="avatar-title bg-light rounded-circle">
+                                            {{ entry.related_user.username|slice:":1"|upper }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">With</div>
+                                        <div>{{ entry.related_user.username }}</div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if entry.settled_at %}
+                                <span class="badge bg-success bg-opacity-10 text-success">
+                                    <i class="fas fa-check-circle me-1"></i>Settled
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning">
+                                    <i class="fas fa-clock me-1"></i>Pending
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="avatar-lg mx-auto mb-3">
+                    <div class="avatar-title bg-light rounded-circle">
+                        <i class="fas fa-clock fs-1 text-muted"></i>
+                    </div>
+                </div>
+                <h5 class="text-muted">No transactions yet</h5>
+                <p class="text-muted mb-0">Your transaction history will appear here</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .avatar-lg {
+        width: 72px;
+        height: 72px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .avatar-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+    }
+    .smaller {
+        font-size: 0.75rem;
+    }
+    tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
