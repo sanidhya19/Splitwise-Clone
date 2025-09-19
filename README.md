@@ -43,45 +43,50 @@ git clone https://github.com/sanidhya19/Splitwise-Clone.git
 cd Splitwise-Clone
 ```
 
-2. **Set up a virtual environment:**
+2. **Set up a virtual environment**:
 
+```bash
 python -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+```
 
+3. **Install dependencies**:
 
-Install dependencies:
-
+```bash
 pip install -r requirements.txt
+```
 
+4. **Apply migrations**:
 
-Apply migrations:
-
+```bash
 python manage.py migrate
+```
 
+5. **Run the development server**:
 
-Run the development server:
-
+```bash
 python manage.py runserver
-
+```
 
 Visit http://127.0.0.1:8000/ in your browser to access the application.
 
+---
 
-**Usage**
+## Usage
 
-User Registration: Navigate to the registration page to create a new account.
+- **User Registration**: Navigate to the registration page to create a new account.
 
-Create Group: After logging in, create a new group by providing a name and description.
+- **Create Group**: After logging in, create a new group by providing a name and description.
 
-Add Expense: Within a group, add expenses by specifying the amount, category, and participants.
+- **Add Expense**: Within a group, add expenses by specifying the amount, category, and participants.
 
-View Balances: Check the balance page to see how much each member owes or is owed.
+- **View Balances**: Check the balance page to see how much each member owes or is owed.
 
-Settle Debts: Use the settlement suggestions to clear balances among members.
+- **Settle Debts**: Use the settlement suggestions to clear balances among members.
 
+---
 
-
-**Contributing**
+## Contributing
 
 Contributions are welcome! To contribute:
 
