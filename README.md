@@ -1,61 +1,44 @@
-**Splitwise Clone**
+# Splitwise Clone
 
-**Overview**
+## Overview
 
-The Splitwise Clone is a web application designed to help users manage and split expenses among groups, such as roommates, friends, or colleagues. It allows users to track shared expenses, calculate balances, and settle debts, making group financial management more straightforward and transparent.
+The Splitwise Clone is a web application designed to help users manage and split expenses among groups, such as roommates, friends, or colleagues.  
+It allows users to track shared expenses, calculate balances, and settle debts, making group financial management easier and more transparent.
 
-**Features**
+---
 
-User Authentication: Secure login and registration system.
+## Features
 
-Group Management: Create and manage groups for different events or shared expenses.
+- **User Authentication**: Secure login and registration system.
+- **Group Management**: Create and manage groups for different events or shared expenses.
+- **Expense Tracking**: Add and categorize expenses, specifying who paid and how the cost should be split.
+- **Balance Calculation**: Automatically calculates each member's balance and suggests settlements.
+- **Responsive Design**: Optimized for both desktop and mobile devices.
 
-Expense Tracking: Add and categorize expenses, specifying who paid and how the cost should be split.
+---
 
-Balance Calculation: Automatically calculates each member's balance and suggests settlements.
+## Technologies Used
 
-Responsive Design: Optimized for both desktop and mobile devices.
+- **Frontend**: HTML, CSS, JavaScript, React.js
+- **Backend**: Python, Django
+- **Database**: SQLite
+- **Authentication**: Django's built-in authentication system
 
+---
 
+## Installation
 
-**Technologies Used**
+### Prerequisites
 
-**Frontend:**
+- Python 3.x  
+- pip (Python package installer)  
+- git  
 
-HTML
+### Steps
 
-CSS
+1. **Clone the repository**
 
-JavaScript
-
-React.js
-
-
-
-**Backend**:
-
-Python
-
-Django
-
-**Database**: SQLite
-
-**Authentication**: Django's built-in authentication system
-
-**Installation**
-
-**Prerequisites**
-
-Python 3.x
-
-pip (Python package installer)
-
-git
-
-Steps
-
-Clone the repository:
-
+```bash
 git clone https://github.com/sanidhya19/Splitwise-Clone.git
 cd Splitwise-Clone
 
