@@ -88,16 +88,27 @@ Visit http://127.0.0.1:8000/ in your browser to access the application.
 
 ## Contributing
 
-Contributions are welcome! To contribute:
+1. Contributions are welcome! To contribute:
 
-Fork the repository.
+2. Fork the repository.
 
-Create a new branch (git checkout -b feature-name).
+3. Create a new branch
+```bash
+git checkout -b feature-name
+```
 
-Make your changes.
+4. Make your changes.
 
-Commit your changes (git commit -am 'Add new feature').
+5. Commit your changes
 
-Push to the branch (git push origin feature-name).
+```bash
+git commit -am 'Add new feature'
+```
 
-Create a new Pull Request.
+6. Push to the branch
+
+```bash  
+git push origin feature-name
+```
+
+7. Create a new Pull Request.
