@@ -30,7 +30,9 @@ JavaScript
 
 React.js
 
-Backend:
+
+
+**Backend**:
 
 Python
 
