@@ -41,9 +41,9 @@ It allows users to track shared expenses, calculate balances, and settle debts, 
 ```bash
 git clone https://github.com/sanidhya19/Splitwise-Clone.git
 cd Splitwise-Clone
-'''
+```
 
-Set up a virtual environment:
+2. **Set up a virtual environment:**
 
 python -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
