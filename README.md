@@ -50,19 +50,13 @@ python -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 ```
 
-3. **Install dependencies**:
-
-```bash
-pip install -r requirements.txt
-```
-
-4. **Apply migrations**:
+3. **Apply migrations**:
 
 ```bash
 python manage.py migrate
 ```
 
-5. **Run the development server**:
+4. **Run the development server**:
 
 ```bash
 python manage.py runserver
